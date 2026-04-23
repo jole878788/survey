@@ -1,116 +1,493 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jiashu Li - AI Researcher</title>
+    <title>高德地图探索功能优化调研问卷</title>
     <style>
+        :root {
+            --primary-color: #0091FF; /* 高德品牌蓝 */
+            --primary-hover: #0077D9;
+            --bg-color: #F4F5F7;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-secondary: #666666;
+            --border-color: #E5E5E5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             line-height: 1.6;
-            max-width: 1000px;
+            padding: 20px 10px;
+        }
+
+        .container {
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            color: #333;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
         }
-        header {
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px 20px;
             text-align: center;
-            border-bottom: 3px solid #2c3e50;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
         }
-        h1 { color: #2c3e50; }
-        h2 { color: #34495e; border-bottom: 2px solid #ecf0f1; }
-        .contact {
+
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .form-content {
+            padding: 30px 20px;
+        }
+
+        .module {
+            margin-bottom: 40px;
+        }
+
+        .module-title {
+            font-size: 18px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            background: #FAFAFA;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .q-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .q-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: normal;
+            margin-left: 5px;
+        }
+
+        .option-list {
+            list-style: none;
+        }
+
+        .option-item {
+            margin-bottom: 12px;
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
+            align-items: center;
         }
-        .section { margin-bottom: 30px; }
-        ul { padding-left: 20px; }
-        .badge {
-            background: #ecf0f1;
-            padding: 5px 10px;
-            border-radius: 15px;
-            margin: 3px;
-            display: inline-block;
+
+        .option-item label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            width: 100%;
+            font-size: 15px;
         }
-        .project { margin-bottom: 25px; }
-        .date { float: right; color: #7f8c8d; }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .input-other {
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            background: transparent;
+            margin-left: 10px;
+            padding: 2px 5px;
+            font-size: 14px;
+            outline: none;
+            flex-grow: 1;
+            max-width: 200px;
+        }
+
+        .input-other:focus {
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* 排序题样式 */
+        .rank-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .rank-item input[type="number"] {
+            width: 50px;
+            padding: 5px;
+            margin-right: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* 矩阵打分题样式 */
+        .matrix-container {
+            overflow-x: auto;
+        }
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+        .matrix-table th, .matrix-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .matrix-table th:first-child, .matrix-table td:first-child {
+            text-align: left;
+            width: 40%;
+        }
+        .matrix-table th {
+            background-color: #F0F2F5;
+        }
+
+        /* 开放题样式 */
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* 提交按钮 */
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 30px;
+        }
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 600px) {
+            .header { padding: 20px 15px; }
+            .form-content { padding: 20px 15px; }
+            .q-title { font-size: 15px; }
+            .option-item label { font-size: 14px; }
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Jiashu Li</h1>
-        <div class="contact">
-            <span>📍 Zhejiang, Wenzhou</span>
-            <span>📧 <a href="mailto:lijiash@kean.edu">lijiash@kean.edu</a></span>
-            <span>📱 +86 15372818852</span>
-        </div>
-    </header>
 
-    <section class="section">
-        <h2>🎓 Education</h2>
-        <div class="project">
-            <h3>Wenzhou-Kean University</h3>
-            <p><em>B.S in Mathematics and Applied Mathematics</em></p>
-            <ul>
-                <li>GPA: 3.91/4.0 | Top 1% Academic Standing</li>
-                <li>Relevant Courses: Applied Machine Learning, Statistical Data Mining, Big Data Computing</li>
-            </ul>
-        </div>
-    </section>
+<div class="container">
+    <div class="header">
+        <h1>高德地图探索功能优化调研问卷</h1>
+        <p>您好！我们正在优化高德地图的"探索"功能，希望了解您在使用地图App时发现地点的真实习惯。问卷约5分钟，所有信息仅用于产品设计研究。</p>
+    </div>
 
-    <section class="section">
-        <h2>💼 Experience</h2>
-        <div class="project">
-            <h3>Algorithm Researcher Intern @ Tsinghua University <span class="date">Sept 2023 - Present</span></h3>
-            <ul>
-                <li>Developed BEV-based perception algorithms for autonomous driving in adverse weather</li>
-                <li>Participated in NAVSIM v2 End-to-End Driving Challenge</li>
-                <li>Contributed to large-scale truck automatic parking system</li>
-            </ul>
-        </div>
-    </section>
-
-    <section class="section">
-        <h2>🔬 Research</h2>
-        <div class="project">
-            <h3>LLM+Autonomous Driving (First Author)</h3>
-            <ul>
-                <li>Integrated Deepseek models with GPT-Driver architecture</li>
-                <li>Achieved SOTA on nuScenes dataset</li>
-                <li>Submitted to IROS 2025</li>
-            </ul>
-        </div>
+    <form class="form-content" onsubmit="event.preventDefault(); alert('感谢您的参与！问卷提交成功。');">
         
-        <div class="project">
-            <h3>Medical Image Denoising (First Author)</h3>
-            <ul>
-                <li>Developed dual-domain GAN for LDCT denoising</li>
-                <li>Improved performance on Mayo-LDCT dataset</li>
-                <li>Submitted to LICNN 2025</li>
-            </ul>
-        </div>
-    </section>
+        <div class="module">
+            <h2 class="module-title">模块一：用户基础画像</h2>
+            
+            <div class="question">
+                <div class="q-title">Q1. 您使用高德地图的主要场景是？<span class="q-desc">（多选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="checkbox" name="q1" value="通勤"> 日常通勤导航</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q1" value="周末"> 周末/假期出行规划</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q1" value="出差"> 出差旅行</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q1" value="本地生活"> 本地生活探索（找餐厅、咖啡馆等）</label></li>
+                    <li class="option-item">
+                        <label><input type="checkbox" name="q1" value="其他"> 其他：<input type="text" class="input-other" name="q1_other"></label>
+                    </li>
+                </ul>
+            </div>
 
-    <section class="section">
-        <h2>🛠️ Technologies</h2>
-        <div>
-            <span class="badge">C++</span>
-            <span class="badge">Python</span>
-            <span class="badge">PyTorch</span>
-            <span class="badge">TensorFlow</span>
-            <span class="badge">OpenCV</span>
-            <span class="badge">MMDetection</span>
-            <span class="badge">Docker</span>
-            <span class="badge">Git</span>
+            <div class="question">
+                <div class="q-title">Q2. 您最近一次打开高德地图的"探索/附近"Tab是什么时候？<span class="q-desc">（单选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="radio" name="q2" value="今天"> 今天</label></li>
+                    <li class="option-item"><label><input type="radio" name="q2" value="本周"> 本周内</label></li>
+                    <li class="option-item"><label><input type="radio" name="q2" value="本月"> 本月内</label></li>
+                    <li class="option-item"><label><input type="radio" name="q2" value="记不清"> 记不清/很少使用</label></li>
+                    <li class="option-item"><label><input type="radio" name="q2" value="从未使用"> 从未使用过</label></li>
+                </ul>
+            </div>
         </div>
-    </section>
 
-    <footer style="text-align: center; margin-top: 40px; color: #7f8c8d;">
-        <p>© 2024 Jiashu Li | Built with ♥ for AI Research</p>
-    </footer>
+        <div class="module">
+            <h2 class="module-title">模块二：现有功能使用习惯</h2>
+
+            <div class="question">
+                <div class="q-title">Q3. 当您想找一家附近餐厅时，您通常会怎么做？<span class="q-desc">（单选，按操作顺序）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="radio" name="q3" value="A"> A. 直接在高德地图搜索"附近美食"</label></li>
+                    <li class="option-item"><label><input type="radio" name="q3" value="B"> B. 先在小红书/抖音看推荐，再复制店名到高德导航</label></li>
+                    <li class="option-item"><label><input type="radio" name="q3" value="C"> C. 在大众点评看榜单，再跳转高德查距离</label></li>
+                    <li class="option-item"><label><input type="radio" name="q3" value="D"> D. 打开高德"探索"Tab浏览推荐</label></li>
+                    <li class="option-item">
+                        <label><input type="radio" name="q3" value="E"> E. 其他：<input type="text" class="input-other" name="q3_other"></label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <div class="q-title">Q4. 您觉得高德现有的"探索"Tab（或"附近"功能）存在哪些问题？<span class="q-desc">（多选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="checkbox" name="q4" value="像广告"> 推荐内容不感兴趣，像广告</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q4" value="不知距离"> 不知道推荐内容距离我多远，是否顺路</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q4" value="不匹配"> 推荐和实际需求不匹配（比如推了餐厅但我只想找咖啡馆）</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q4" value="形式单一"> 内容形式单一，只有图文没有真实评价</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q4" value="无法规划"> 无法直接加入行程规划，看完还得手动搜索</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q4" value="内容重复"> 和其他App（小红书/点评）内容重复，没有独特价值</label></li>
+                    <li class="option-item">
+                        <label><input type="checkbox" name="q4" value="其他"> 其他：<input type="text" class="input-other" name="q4_other"></label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <div class="q-title">Q5. 您如何评价高德现有的"必吃榜/扫街榜"等榜单？<span class="q-desc">（单选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="radio" name="q5" value="信任度高"> 经常参考，信任度高</label></li>
+                    <li class="option-item"><label><input type="radio" name="q5" value="交叉验证"> 偶尔看看，但会去其他App交叉验证</label></li>
+                    <li class="option-item"><label><input type="radio" name="q5" value="不够真实"> 很少关注，觉得不够真实/有商业合作</label></li>
+                    <li class="option-item"><label><input type="radio" name="q5" value="不知道"> 不知道高德有这些榜单</label></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="module">
+            <h2 class="module-title">模块三："推荐"功能需求调研</h2>
+
+            <div class="question">
+                <div class="q-title">Q6. 当您没有明确目的地、想"随便逛逛"时，您希望地图App给您推荐什么？<span class="q-desc">（多选，最多3项）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="checkbox" name="q6" value="高分餐厅"> 当前位置附近的高分餐厅/咖啡馆（步行可达）</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q6" value="网红地点"> 适合拍照打卡的网红地点</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q6" value="漫步路线"> 周末短途游/城市漫步路线</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q6" value="类似风格"> 根据我收藏夹推荐"类似风格"的新地点</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q6" value="热门地点"> 当前热门/ trending 地点</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q6" value="朋友推荐"> 朋友去过/推荐的地方</label></li>
+                    <li class="option-item">
+                        <label><input type="checkbox" name="q6" value="其他"> 其他：<input type="text" class="input-other" name="q6_other"></label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <div class="q-title">Q7. 以下哪种"推荐"呈现方式更吸引您点击？<span class="q-desc">（单选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="radio" name="q7" value="A"> A. 大图卡片+简短标题（如"杭州TOP10咖啡馆"）</label></li>
+                    <li class="option-item"><label><input type="radio" name="q7" value="B"> B. 地图散点+距离标注（一眼看清分布）</label></li>
+                    <li class="option-item"><label><input type="radio" name="q7" value="C"> C. 时间轴路线（如"半日文艺路线：A→B→C"）</label></li>
+                    <li class="option-item"><label><input type="radio" name="q7" value="D"> D. 视频/直播形式（真实探店画面）</label></li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <div class="q-title">Q8. 如果"推荐"Tab默认展示内容，您希望基于什么逻辑排序？<span class="q-desc">（排序题，请按优先级填入1-4）</span></div>
+                <div class="rank-item">
+                    <input type="number" min="1" max="4" name="q8_rank1">
+                    <label>距离我最近</label>
+                </div>
+                <div class="rank-item">
+                    <input type="number" min="1" max="4" name="q8_rank2">
+                    <label>和我收藏夹风格相似</label>
+                </div>
+                <div class="rank-item">
+                    <input type="number" min="1" max="4" name="q8_rank3">
+                    <label>当前时段适合（如早餐时间推早餐店）</label>
+                </div>
+                <div class="rank-item">
+                    <input type="number" min="1" max="4" name="q8_rank4">
+                    <label>朋友/达人推荐热度高</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="module">
+            <h2 class="module-title">模块四："附近"功能需求调研</h2>
+
+            <div class="question">
+                <div class="q-title">Q9. 当您使用"附近"功能时，您的核心目的是？<span class="q-desc">（单选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="radio" name="q9" value="目的性强"> 马上要去某个地方，找周边有什么（目的性强）</label></li>
+                    <li class="option-item"><label><input type="radio" name="q9" value="随意浏览"> 在某个区域，想看看附近有什么值得探索的（随意浏览）</label></li>
+                    <li class="option-item"><label><input type="radio" name="q9" value="提前规划"> 规划明天的行程，先标记几个地点（提前规划）</label></li>
+                    <li class="option-item">
+                        <label><input type="radio" name="q9" value="其他"> 其他：<input type="text" class="input-other" name="q9_other"></label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <div class="q-title">Q10. 您希望"附近"功能增加哪些能力？<span class="q-desc">（多选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="checkbox" name="q10" value="画圈选择"> 可以画圈选择一片区域，看区域内所有推荐</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q10" value="最优路线"> 能直接看到"从当前位置出发，逛完这几家店的最优路线"</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q10" value="空间关系"> 显示"附近地点"和我的"收藏夹/行程"的空间关系（是否顺路）</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q10" value="实时状态"> 能筛选"营业中/无需排队/有团购"等实时状态</label></li>
+                    <li class="option-item">
+                        <label><input type="checkbox" name="q10" value="其他"> 其他：<input type="text" class="input-other" name="q10_other"></label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <div class="q-title">Q11. 如果"附近"和"路线规划"打通，您希望如何交互？<span class="q-desc">（单选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="radio" name="q11" value="左滑加入"> 在附近列表左滑地点，直接加入今日行程</label></li>
+                    <li class="option-item"><label><input type="radio" name="q11" value="圈选生成"> 在地图上圈选多个附近地点，一键生成游览路线</label></li>
+                    <li class="option-item"><label><input type="radio" name="q11" value="显示增加时间"> 附近地点卡片显示"加入路线后，总行程增加XX分钟"</label></li>
+                    <li class="option-item"><label><input type="radio" name="q11" value="保持现状"> 保持现有逻辑，附近就是附近，规划就是规划</label></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="module">
+            <h2 class="module-title">模块五：功能整合偏好</h2>
+
+            <div class="question">
+                <div class="q-title">Q12. 如果将"探索"Tab拆分为"推荐"和"附近"两个子Tab，您希望默认进入哪个？<span class="q-desc">（单选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="radio" name="q12" value="推荐"> 推荐（无目的浏览）</label></li>
+                    <li class="option-item"><label><input type="radio" name="q12" value="附近"> 附近（有目的查找）</label></li>
+                    <li class="option-item"><label><input type="radio" name="q12" value="记住选择"> 记住我上次的选择</label></li>
+                    <li class="option-item"><label><input type="radio" name="q12" value="智能切换"> 根据时间智能切换（工作日推附近，周末推推荐）</label></li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <div class="q-title">Q13. 您希望"推荐"内容融入哪些跨平台信息？<span class="q-desc">（多选）</span></div>
+                <ul class="option-list">
+                    <li class="option-item"><label><input type="checkbox" name="q13" value="小红书"> 小红书真实笔记/打卡照片</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q13" value="大众点评"> 大众点评评分/人均消费</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q13" value="抖音"> 抖音探店短视频</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q13" value="高德原生"> 高德原生导航数据（如"本月10万人导航至此"）</label></li>
+                    <li class="option-item"><label><input type="checkbox" name="q13" value="不需要"> 不需要，保持高德原生内容即可</label></li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <div class="q-title">Q14. 请用1-5分评价以下功能对您的重要性<span class="q-desc">（1=完全不需要，5=非常需要）</span></div>
+                <div class="matrix-container">
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th>功能</th>
+                                <th>1分</th>
+                                <th>2分</th>
+                                <th>3分</th>
+                                <th>4分</th>
+                                <th>5分</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>根据我的收藏夹智能推荐相似地点</td>
+                                <td><input type="radio" name="q14_1" value="1"></td>
+                                <td><input type="radio" name="q14_1" value="2"></td>
+                                <td><input type="radio" name="q14_1" value="3"></td>
+                                <td><input type="radio" name="q14_1" value="4"></td>
+                                <td><input type="radio" name="q14_1" value="5"></td>
+                            </tr>
+                            <tr>
+                                <td>推荐内容显示与我的酒店/家的距离</td>
+                                <td><input type="radio" name="q14_2" value="1"></td>
+                                <td><input type="radio" name="q14_2" value="2"></td>
+                                <td><input type="radio" name="q14_2" value="3"></td>
+                                <td><input type="radio" name="q14_2" value="4"></td>
+                                <td><input type="radio" name="q14_2" value="5"></td>
+                            </tr>
+                            <tr>
+                                <td>一键将推荐地点加入行程路线</td>
+                                <td><input type="radio" name="q14_3" value="1"></td>
+                                <td><input type="radio" name="q14_3" value="2"></td>
+                                <td><input type="radio" name="q14_3" value="3"></td>
+                                <td><input type="radio" name="q14_3" value="4"></td>
+                                <td><input type="radio" name="q14_3" value="5"></td>
+                            </tr>
+                            <tr>
+                                <td>导航中自动推荐沿途可停下的地点</td>
+                                <td><input type="radio" name="q14_4" value="1"></td>
+                                <td><input type="radio" name="q14_4" value="2"></td>
+                                <td><input type="radio" name="q14_4" value="3"></td>
+                                <td><input type="radio" name="q14_4" value="4"></td>
+                                <td><input type="radio" name="q14_4" value="5"></td>
+                            </tr>
+                            <tr>
+                                <td>推荐内容按"可步行串联"分组</td>
+                                <td><input type="radio" name="q14_5" value="1"></td>
+                                <td><input type="radio" name="q14_5" value="2"></td>
+                                <td><input type="radio" name="q14_5" value="3"></td>
+                                <td><input type="radio" name="q14_5" value="4"></td>
+                                <td><input type="radio" name="q14_5" value="5"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="q-title">Q15. 描述一次您"临时决定出门，但不知道去哪"的经历。当时您用了哪些App？理想中地图App应该怎么帮您？<span class="q-desc">（开放题）</span></div>
+                <textarea name="q15" placeholder="请在此输入您的经历和想法..."></textarea>
+            </div>
+        </div>
+
+        <div class="module" style="border-top: 1px dashed var(--border-color); padding-top: 20px;">
+            <p style="font-size: 15px; margin-bottom: 10px;"><strong>感谢您的参与！</strong>如有兴趣参与后续深度访谈，请留下您的微信/手机号（选填）：</p>
+            <input type="text" name="contact" class="input-other" style="width: 100%; max-width: 300px; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;" placeholder="您的微信号或手机号">
+        </div>
+
+        <button type="submit" class="submit-btn">提交问卷</button>
+    </form>
+</div>
+
 </body>
 </html>
